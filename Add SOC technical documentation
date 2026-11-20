@@ -1,0 +1,145 @@
+# SOC Build-Out – Technical Documentation
+
+## 1. Project Information
+
+| Field | Details |
+|---|---|
+| Project | Security Operations Center Build-Out |
+| Domain | Cybersecurity |
+| SIEM Platform | Splunk Enterprise |
+| Windows Endpoint | Windows 11 |
+| Linux Endpoint | Ubuntu Server 24.04.5 |
+| Monitoring Tool | Sysmon |
+| Log Forwarding | Splunk Universal Forwarder |
+
+## 2. System Architecture
+
+The SOC environment uses centralized log collection and monitoring.
+
+**Data flow:**
+
+1. Windows generates system and security events.
+2. Sysmon collects Windows process and network activity.
+3. Windows Universal Forwarder forwards Windows logs.
+4. Ubuntu generates system and authentication logs.
+5. Ubuntu Universal Forwarder forwards Linux logs.
+6. Splunk Enterprise receives and indexes the forwarded events.
+7. Splunk dashboards and searches support security monitoring.
+
+Architecture files:
+- `SOC-Architecture.png`
+- `SOC-Architecture.drawio`
+
+## 3. Data Sources
+
+**Windows**
+- Windows Security Event Logs
+- Sysmon Operational Event Logs
+- Process creation activity
+- Network connection activity
+- Authentication events
+- Administrator group modifications
+
+**Ubuntu**
+- `/var/log/syslog`
+- `/var/log/auth.log`
+
+## 4. Network and Port Configuration
+
+| Component | Port | Purpose |
+|---|---:|---|
+| Splunk Web | 8000 | Web interface |
+| Splunk Receiving | 9997 | Forwarded log collection |
+
+Both Universal Forwarders send collected events to the Splunk receiving service.
+
+## 5. Event Monitoring
+
+| Event ID | Source | Purpose |
+|---|---|---|
+| 4625 | Windows Security | Failed login attempts |
+| 4732 | Windows Security | Security-enabled local group modification |
+| 1 | Sysmon | Process creation |
+| 3 | Sysmon | Network connection activity |
+
+## 6. MITRE ATT&CK Mapping
+
+| Technique | ID | Use case |
+|---|---|---|
+| Brute Force | T1110 | Failed authentication monitoring |
+| PowerShell | T1059.001 | PowerShell activity |
+| Account Manipulation | T1098 | Administrator group changes |
+| System Network Connections Discovery | T1049 | Network activity monitoring |
+
+## 7. Splunk Dashboard
+
+The dashboard includes five monitoring panels:
+
+1. Windows Failed Login Activity
+2. Ubuntu Authentication Activity
+3. PowerShell Process Activity
+4. Administrator Group Changes
+5. Network Connection Activity
+
+The dashboard definition is included in `SOC-Dashboard.xml`.
+
+## 8. Alert Configuration
+
+**Alert:** SOC - Multiple Failed Windows Logins
+
+- Event ID: 4625
+- Threshold: Five or more matching events
+- Search window: Previous 24 hours
+- Schedule: Hourly
+
+The alert was enabled, but successful automatic triggering was not independently verified.
+
+## 9. Testing and Validation
+
+Controlled tests included:
+
+- Windows failed-login activity.
+- PowerShell process monitoring.
+- Harmless encoded PowerShell testing.
+- Administrator group modification followed by removal of the temporary user.
+- Sysmon network connection monitoring.
+- Ubuntu authentication log collection.
+
+Evidence screenshots are included in the repository.
+
+## 10. API Documentation
+
+No custom REST API was developed for this project.
+
+Log collection and communication use Splunk Universal Forwarders and the Splunk receiving service.
+
+## 11. Implementation Limitations
+
+The project implements endpoint monitoring and centralized SIEM log analysis.
+
+The following components were not deployed:
+
+- Suricata
+- Atomic Red Team
+- TheHive
+- Cortex
+- Shuffle SOAR
+
+These remain future enhancements.
+
+## 12. Future Enhancements
+
+- Integrate Suricata network intrusion detection.
+- Expand MITRE ATT&CK detection coverage.
+- Add Atomic Red Team simulations.
+- Integrate TheHive and Cortex.
+- Implement Shuffle SOAR automation.
+- Expand endpoint monitoring.
+
+## 13. Project Author
+
+**GitHub:** Harshavadhan25
+
+**Repository:** SOC-Build-Out-Splunk
+
+**Domain:** Cybersecurity / Security Operations
