@@ -1,0 +1,90 @@
+<dashboard version="1.1" theme="dark">
+  <label>SOC Security Monitoring Dashboard</label>
+  <row>
+    <panel>
+      <title>Windows Failed Login Activity.</title>
+      <chart>
+        <search>
+          <query>index=main host="Hans" source="WinEventLog:Security" EventCode=4625
+| timechart span=1h count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Administrator Group Changes</title>
+      <chart>
+        <search>
+          <query>index=main host="Hans" source="WinEventLog:Security" EventCode=4732
+| search _raw="*Administrators*"
+| timechart span=1h count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>PowerShell Process Activity</title>
+      <chart>
+        <search>
+          <query>index=main source="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+| rex field=_raw "EventID[\"&gt;= ]+(?&lt;EventCode&gt;[0-9]+)"
+| search EventCode=1
+| search _raw="*powershell.exe*"
+| timechart span=1h count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Ubuntu Authentication Activity</title>
+      <chart>
+        <search>
+          <query>index=main host="soc-ubuntu-server" source="/var/log/auth.log"
+| timechart span=1h count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Network Connection Activity</title>
+        <search>
+          <query>index=main host="Hans" source="WinEventLog:Microsoft-Windows-Sysmon/Operational"
+| rex field=_raw "EventID[\"&gt;= ]+(?&lt;EventCode&gt;[0-9]+)"
+| search EventCode=3
+| timechart span=1h count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>
